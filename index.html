@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rob Zombie</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            margin: auto;
+            width: 1080px;
+            height: 572px;
+            position: relative;
+            top: 5%;
+            left: 5%;
+            background: url("./maya001.jpg");
+            overflow: hidden;
+            border: 5px solid black;
+            cursor: crosshair;
+        }
+
+        #top {
+            width: 1000px;
+            height: 10px;
+            margin-left: 400px;
+        }
+
+        #game {
+            margin: auto;
+            width: 1080px;
+            height: 470px;
+        }
+
+        #footer {
+            margin: auto;
+            width: 1000px;
+            height: 92px;
+            text-align: center;
+        }
+
+        #game img {
+            height: 150px;
+            position: absolute;
+        }
+
+        #btn-start {
+            box-shadow: 0px 1px 0px 0px #1c1b18;
+            background: linear-gradient(to bottom, #eae0c2 5%, #ccc2a6 100%);
+            background-color: #eae0c2;
+            border-radius: 15px;
+            border: 2px solid #333029;
+            display: inline-block;
+            cursor: pointer;
+            color: #505739;
+            font-family: "Georgia";
+            font-size: 15px;
+            font-weight: bold;
+            padding: 12px 16px;
+            text-shadow: 0px 1px 0px #ffffff;
+        }
+
+        #btn-start:hover {
+            background: linear-gradient(to bottom, #ccc2a6 5%, #eae0c2 100%);
+            background-color: #ccc2a6;
+        }
+
+        #btn-start:active {
+            position: relative;
+            top: 1px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="top"><img src="./robZombie.png" width="300" height="100"></div>
+        <div id="game"></div>
+
+
+        <div id="footer">
+            <tr>
+                <td>
+                    <!-- <a href="#" class="myButton">Get Started</a> -->
+                    <input type="button" value="Get Started" id="btn-start">
+                </td>
+                <br />
+                <td>
+                    <h4>Score: &nbsp; <span id="text-score">0 </span></h4>
+                </td>
+                <td>
+                    <h4 style="color: rgb(193, 233, 16);">Countdown: &nbsp; <span id="text-time">0</span>s</h4>
+                </td>
+            </tr>
+        </div>
+    </div>
+
+    <script src="../jquery-3.6.0.min.js"></script>
+    <script src="http://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        // 分數
+        let score = 0
+        // 遊戲時間
+        let countdown = 20
+        // 倒數計時
+        let timer = 0
+
+        const move = (zb) => {
+            zb.stop().animate({
+                left: Math.round(Math.random() * 70) + '%',
+                top: Math.round(Math.random() * 70) + '%'
+            }, 2000, function () {
+                move(zb)
+            })
+        }
+
+        $('#btn-start').click(function () {
+            $(this).attr('disabled', true)
+
+            // 重設
+            score = 0
+            $('#text-score').text(score)
+            countdown = 20
+            $('#text-time').text(countdown)
+
+            timer = setInterval(() => {
+                // 倒數
+                countdown--
+                $('#text-time').text(countdown)
+
+                // 隨機產生
+                let rand = Math.round(Math.random() * 10)
+                if (rand > 5 && $('#game img').length < 10) {
+                    const zb = $(`<img src="./skeleton.gif" alt="" style="left:${Math.round(Math.random() * 70)}%;top:${Math.round(Math.random() * 70)}%">`)
+                    $('#game').append(zb)
+                    move(zb)
+                }
+                // 時間到
+                if (countdown <= 0) {
+                    clearInterval(timer)
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Times Up!',
+                        text: `Your score: ${score} `
+                    })
+                    $('#game img').remove()
+                    $(this).attr('disabled', false)
+                }
+            }, 1000);
+        })
+
+        $('#game').on('click', 'img', function () {
+            $(this).attr('src', './blood.png')
+            $(this).stop()
+            // 忽略點擊事件、無法點擊和選取
+            $(this).css({
+                'user-select': 'none',
+                '-webkit-user-drag': 'none',
+                'pointer-events': 'none'
+            })
+            score++
+            $('#text-score').text(score)
+        })
+    </script>
+
+</body>
+
+</html>
